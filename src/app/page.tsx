@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence, useMotionValue, useSpring } from 'framer-motion'; // Keep for button animation
-import { useTheme } from '@/components/theme-provider';
+import { useTheme } from 'next-themes'; // Import from next-themes
 import { SunIcon, MoonIcon } from '@heroicons/react/24/outline'; // Example icons
 
 export default function Home() {
-  const { theme, toggleTheme } = useTheme();
+  const { theme, setTheme } = useTheme();
   const [isMounted, setIsMounted] = useState(false);
 
   // Mouse follower state and logic
@@ -34,6 +34,11 @@ export default function Home() {
   }, []); // Run only on mount
 
   const glassMorphism = 'bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-60 dark:bg-opacity-30 border border-gray-200 dark:border-gray-700'; // Simplified blur/opacity
+
+  // Function to toggle between light and dark using setTheme from next-themes
+  const toggleTheme = () => {
+    setTheme(theme === 'dark' ? 'light' : 'dark');
+  };
 
   if (!isMounted) {
     // Still needed to prevent hydration mismatch on theme toggle button
