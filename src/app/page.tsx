@@ -83,7 +83,7 @@ export default function Home() {
 
       {/* Footer */}
       <footer className="absolute bottom-5 text-xs text-gray-500 dark:text-gray-400 z-10">
-        Built by the Via team.
+        Built by the Via rides team.
       </footer>
     </div>
   );
