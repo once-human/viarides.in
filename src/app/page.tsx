@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react'; // Keep useEffect for mouse listener
 import { motion, useMotionValue, useSpring } from 'framer-motion'; // Removed AnimatePresence
+import { ArrowTopRightOnSquareIcon } from '@heroicons/react/20/solid'; // Use solid icon for GitHub link
 // Removed useTheme import
 // Removed Icon imports
 
@@ -28,13 +29,14 @@ export default function Home() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Still run only on mount
 
-  const glassMorphism = 'bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-30 border border-gray-700'; // Use dark variant directly
+  // Refined glassmorphism - slightly less blur, adjusted opacity/border
+  const glassMorphism = 'bg-white/10 dark:bg-gray-900/10 backdrop-blur-lg border border-white/10 dark:border-gray-800/20 shadow-xl';
 
   // Removed isMounted check
 
   return (
-    // Hardcoded dark background, removed theme-dependent classes
-    <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden bg-gradient-to-br from-gray-900 to-black text-gray-100 font-[family-name:var(--font-geist-sans)]">
+    // Added overflow-x-hidden to prevent horizontal scroll issues from blobs
+    <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden overflow-x-hidden bg-gradient-to-br from-gray-900 to-black text-gray-100 font-[family-name:var(--font-geist-sans)]">
 
       {/* Keep Mouse Follower Effect (use dark variants) */}
       <motion.div
@@ -53,7 +55,7 @@ export default function Home() {
 
       {/* Main Content (z-10) - use dark variants directly */}
       <motion.main
-        className={`relative z-10 flex flex-col items-center justify-center text-center p-8 rounded-lg shadow-xl ${glassMorphism} select-none`}
+        className={`relative z-10 flex flex-col items-center justify-center text-center p-6 sm:p-8 rounded-2xl ${glassMorphism} select-none w-[90%] max-w-lg sm:max-w-xl md:max-w-2xl`}
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: "easeOut" }}
@@ -75,9 +77,25 @@ export default function Home() {
         </motion.div>
       </motion.main>
 
+      {/* GitHub Contribution Link */}
+      <motion.a
+        href="https://github.com/via-rides"
+        target="_blank"
+        rel="noopener noreferrer"
+        className={`mt-8 flex items-center gap-2 px-4 py-2 rounded-full text-sm font-medium text-gray-300 hover:text-white transition-colors duration-300 ${glassMorphism}`}
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1.1, duration: 0.5, ease: "easeOut" }}
+        whileHover={{ scale: 1.05, boxShadow: '0px 0px 15px rgba(255, 255, 255, 0.1)' }}
+        whileTap={{ scale: 0.95 }}
+      >
+        Contribute on GitHub
+        <ArrowTopRightOnSquareIcon className="w-4 h-4" />
+      </motion.a>
+
       {/* Keep Footer - use dark variant directly */}
       <footer className="absolute bottom-5 text-xs text-gray-400 z-10 select-none">
-        Built by the Via team.
+        Built by the Via Rides team.
       </footer>
     </div>
   );
