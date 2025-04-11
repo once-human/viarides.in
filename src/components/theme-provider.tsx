@@ -15,34 +15,35 @@ interface ThemeProviderProps {
   children: ReactNode;
 }
 
-export function ThemeProvider({ children }: ThemeProviderProps) {
-  const [theme, setTheme] = useState<Theme>('dark'); // Default to dark theme
+// Helper function to check if running in browser
+const isBrowser = typeof window !== 'undefined';
 
-  useEffect(() => {
-    // Check local storage or system preference on initial load
-    console.log('ThemeProvider: Checking initial theme...');
+export function ThemeProvider({ children }: ThemeProviderProps) {
+  // Initialize state, defaulting to dark but will be updated by effect
+  const [theme, setTheme] = useState<Theme>(() => {
+    if (!isBrowser) return 'dark'; // Default for SSR
     const storedTheme = localStorage.getItem('theme') as Theme | null;
     const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-    let initialTheme: Theme;
-    if (storedTheme) {
-      console.log('ThemeProvider: Found theme in localStorage:', storedTheme);
-      initialTheme = storedTheme;
-    } else {
-      initialTheme = prefersDark ? 'dark' : 'light';
-      console.log('ThemeProvider: Setting theme based on prefers-color-scheme:', initialTheme);
-    }
-    setTheme(initialTheme);
-  }, []);
+    return storedTheme || (prefersDark ? 'dark' : 'light');
+  });
 
+  // Effect to apply class AFTER component mounts
   useEffect(() => {
-    // Apply theme class to root element and store preference
-    console.log(`ThemeProvider: Applying theme: ${theme}`);
+    console.log(`ThemeProvider Effect: Applying theme class: ${theme}`);
     const root = window.document.documentElement;
     const oldTheme = theme === 'light' ? 'dark' : 'light';
     root.classList.remove(oldTheme);
     root.classList.add(theme);
-    console.log(`ThemeProvider: Removed class ${oldTheme}, Added class ${theme} to <html>`);
-    localStorage.setItem('theme', theme);
+    console.log(`ThemeProvider Effect: Removed class ${oldTheme}, Added class ${theme} to <html>`);
+
+    // Try setting local storage only in the effect
+    try {
+        localStorage.setItem('theme', theme);
+        console.log(`ThemeProvider Effect: Set localStorage theme to ${theme}`);
+    } catch (error) {
+        console.error('ThemeProvider Effect: Failed to set localStorage', error);
+    }
+
   }, [theme]);
 
   const toggleTheme = () => {
@@ -52,6 +53,13 @@ export function ThemeProvider({ children }: ThemeProviderProps) {
       return newTheme;
     });
   };
+
+  // Add an effect to log when the provider mounts
+  useEffect(() => {
+    console.log('ThemeProvider: Mounted');
+  }, []);
+
+  console.log(`ThemeProvider: Rendering with theme: ${theme}`);
 
   return (
     <ThemeContext.Provider value={{ theme, toggleTheme }}>
