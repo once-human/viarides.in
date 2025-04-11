@@ -128,7 +128,7 @@ export default function Home() {
 
       {/* Keep Footer - use dark variant directly */}
       <footer className="absolute bottom-5 text-xs text-gray-400 z-10 select-none">
-        Built by the Via Rides team.
+        Built with ❤️ by the Via Rides team.
       </footer>
     </div>
   );
