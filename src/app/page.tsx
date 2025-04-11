@@ -1,89 +1,83 @@
-'use client'; // Need client component for theme toggle and animations
+'use client';
 
-import { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion'; // Keep for button animation
-import { useTheme } from '@/components/theme-provider';
-import { SunIcon, MoonIcon } from '@heroicons/react/24/outline'; // Example icons
+import { useEffect } from 'react'; // Keep useEffect for mouse listener
+import { motion, useMotionValue, useSpring } from 'framer-motion'; // Removed AnimatePresence
+// Removed useTheme import
+// Removed Icon imports
 
 export default function Home() {
-  const { theme, toggleTheme } = useTheme();
-  const [isMounted, setIsMounted] = useState(false);
+  // Removed theme state and isMounted state
+
+  // Keep Mouse follower state and logic
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+  const springConfig = { damping: 25, stiffness: 300 };
+  const smoothMouseX = useSpring(mouseX, springConfig);
+  const smoothMouseY = useSpring(mouseY, springConfig);
 
   useEffect(() => {
-    setIsMounted(true);
-  }, []);
+    // No need to set isMounted anymore
+    const handleMouseMove = (event: MouseEvent) => {
+      mouseX.set(event.clientX);
+      mouseY.set(event.clientY);
+    };
+    window.addEventListener('mousemove', handleMouseMove);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Still run only on mount
 
-  const glassMorphism = 'bg-clip-padding backdrop-filter backdrop-blur-md bg-opacity-40 dark:bg-opacity-20 border border-gray-200 dark:border-gray-700'; // Simplified blur/opacity
+  const glassMorphism = 'bg-clip-padding backdrop-filter backdrop-blur-xl bg-opacity-30 border border-gray-700'; // Use dark variant directly
 
-  if (!isMounted) {
-    // Still needed to prevent hydration mismatch on theme toggle button
-    return null;
-  }
+  // Removed isMounted check
 
   return (
-    <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden bg-gradient-to-br from-gray-100 to-gray-300 dark:from-gray-900 dark:to-black text-gray-900 dark:text-gray-100 font-[family-name:var(--font-geist-sans)] transition-colors duration-500">
+    // Hardcoded dark background, removed theme-dependent classes
+    <div className="relative flex flex-col items-center justify-center min-h-screen overflow-hidden bg-gradient-to-br from-gray-900 to-black text-gray-100 font-[family-name:var(--font-geist-sans)]">
 
-      {/* Theme Toggle Button (Simplified but kept animation) */}
-      <motion.button
-        onClick={toggleTheme}
-        className={`fixed top-6 right-6 z-50 p-2 rounded-full focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 ${glassMorphism}`}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
-        aria-label="Toggle theme"
+      {/* Keep Mouse Follower Effect (use dark variants) */}
+      <motion.div
+        className="fixed top-0 left-0 w-64 h-64 rounded-full bg-gradient-radial from-purple-600/60 via-pink-600/40 to-sky-600/20 filter blur-[75px] pointer-events-none z-0"
+        style={{ translateX: smoothMouseX, translateY: smoothMouseY, x: '-50%', y: '-50%' }}
+      />
+
+      {/* Keep Animated Background Blobs (use dark variants) */}
+      <div className="absolute inset-0 z-[-1] overflow-hidden">
+        <motion.div className="absolute -top-40 -left-40 w-96 h-96 bg-purple-600 rounded-full mix-blend-screen filter blur-3xl opacity-40 animate-blob" style={{ animationDelay: '0s' }} />
+        <motion.div className="absolute -bottom-40 -right-20 w-80 h-80 bg-pink-600 rounded-full mix-blend-screen filter blur-3xl opacity-40 animate-blob" style={{ animationDelay: '2s' }} />
+        <motion.div className="absolute top-20 right-40 w-72 h-72 bg-sky-600 rounded-full mix-blend-screen filter blur-3xl opacity-40 animate-blob" style={{ animationDelay: '4s' }} />
+      </div>
+
+      {/* Removed Theme Toggle Button */}
+
+      {/* Main Content (z-10) - use dark variants directly */}
+      <motion.main
+        className={`relative z-10 flex flex-col items-center justify-center text-center p-8 rounded-lg shadow-xl ${glassMorphism} select-none`}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8, ease: "easeOut" }}
       >
-        <AnimatePresence mode="wait" initial={false}>
-          {theme === 'dark' ? (
-            <motion.div
-              key="sun"
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 20, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <SunIcon className="h-6 w-6 text-yellow-400" />
-            </motion.div>
-          ) : (
-            <motion.div
-              key="moon"
-              initial={{ y: -20, opacity: 0 }}
-              animate={{ y: 0, opacity: 1 }}
-              exit={{ y: 20, opacity: 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <MoonIcon className="h-6 w-6 text-indigo-500" />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </motion.button>
+        <motion.h1 className="text-4xl sm:text-6xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-sky-400 via-cyan-400 to-teal-400 bg-clip-text text-transparent" initial={{ opacity: 0, scale: 0.8 }} animate={{ opacity: 1, scale: 1 }} transition={{ delay: 0.2, duration: 0.6, type: "spring", stiffness: 100 }}>
+           Via
+        </motion.h1>
+        <motion.p className="text-lg sm:text-xl md:text-2xl text-gray-300 mb-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5, duration: 0.5 }}>
+           Your next ride, simplified. Launching soon.
+        </motion.p>
+        <motion.p className="text-sm sm:text-base text-gray-400 mb-8" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.6, duration: 0.5 }}>
+           A subscription based ride booking service.
+        </motion.p>
+        <motion.div className="text-xs text-gray-400 mt-4" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.8, duration: 0.5 }}>
+           Planned launch: 2026
+        </motion.div>
+        <motion.div className="text-xs text-gray-400 mt-2" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.9, duration: 0.5 }}>
+           More details & website revamp planned for May 2025.
+        </motion.div>
+      </motion.main>
 
-      {/* Main Content (Simplified - removed motion wrappers for now) */}
-      <main
-        className={`relative z-10 flex flex-col items-center justify-center text-center p-8 rounded-lg shadow-xl ${glassMorphism}`}
-      >
-        <h1 className="text-4xl sm:text-6xl md:text-7xl font-bold mb-4 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 dark:from-sky-400 dark:via-cyan-400 dark:to-teal-400 bg-clip-text text-transparent">
-          Via
-        </h1>
-
-        <p className="text-lg sm:text-xl md:text-2xl text-gray-700 dark:text-gray-300 mb-2">
-          Your next ride, simplified. Launching soon.
-        </p>
-
-        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400 mb-8">
-          A subscription based ride booking service.
-        </p>
-
-        <div className="text-xs text-gray-500 dark:text-gray-400 mt-4">
-          Planned launch: 2026
-        </div>
-
-        <div className="text-xs text-gray-500 dark:text-gray-400 mt-2">
-          More details & website revamp planned for May 2025.
-        </div>
-      </main>
-
-      {/* Footer */}
-      <footer className="absolute bottom-5 text-xs text-gray-500 dark:text-gray-400 z-10">
-        Built by the Via rides team.
+      {/* Keep Footer - use dark variant directly */}
+      <footer className="absolute bottom-5 text-xs text-gray-400 z-10 select-none">
+        Built by the Via team.
       </footer>
     </div>
   );
